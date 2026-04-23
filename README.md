@@ -123,7 +123,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 ## 알려진 이슈·메모
 
 
-- `EnemyGenerator` 안에는 여전히 `Enermys`, `SpawnEnermy()` 등 **옛 철자가 남은 식별자**가 있습니다. 전부 `Enemy`로 통일하려면 씬·프리팹 직렬화 필드명도 함께 손봐야 합니다.
+
 
 
 문의나 개선 PR은 [Issues](https://github.com/maythird/2d-vertial-shooter/issues)를 이용해 주세요.
