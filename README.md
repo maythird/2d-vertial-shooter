@@ -1,6 +1,6 @@
 # 2D Vertical Shooter (Study)
 
-**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-26
+**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-23
 
 골드메탈님의 **2D 종스크롤 슈팅** 튜토리얼을 따라 만든 Unity 학습용 프로젝트입니다.  
 에셋 팩 **Vertical 2D Shooting BE4**의 스프라이트·데모 리소스를 활용하고, 플레이어·적·탄·아이템·UI 로직은 `Assets/Scripts`에 구현되어 있습니다.
@@ -31,7 +31,7 @@
 - **적 스폰**: `EnemyGenerator`가 랜덤 간격으로 프리팹을 스폰 포인트에서 생성. 일부 스폰은 **대각선 이동**·`Rigidbody2D` 하강 등 패턴 분기.
 - **적 AI/탄**: `EnemyController`에서 이동·체력·점수·아이템 드롭 확률 처리. 이름 `"C"`인 적은 이중 탄 발사 등. 공용 적 탄 프리팹은 `EnemyBullet` 등으로 정리됨.
 - **아이템**: 코인·파워·붐 슬롯 (`Item` + `type` 문자열).
-- **UI**: TextMeshPro 점수, 생명·붐 아이콘 알파, 라이프 0 이하 시 **게임 오버** UI 및 오브젝트 정리 (`GameManager`). **`SampleScene`**에 붐 슬롯용 UI **`Boom_0` ~ `Boom_2`**(Image) 오브젝트가 추가되어 있으며, 동작을 위해서는 인스펙터에서 **`GameManager.boomImages`** 배열에 위 Image들을 순서대로 연결해야 합니다.
+- **UI**: TextMeshPro 점수, 생명·붐 아이콘 알파, 라이프 0 이하 시 **게임 오버** UI 및 오브젝트 정리 (`GameManager`). `GameScene`은 `GameManager.boomImages`가 연결되어 있고, `SampleScene`은 비어 있어 씬에 따라 붐 슬롯 UI 동작이 다를 수 있습니다.
 
 ---
 
@@ -51,7 +51,8 @@
 ```
 Assets/
 ├── Scenes/
-│   └── SampleScene.unity      # 메인 플레이 씬
+│   ├── GameScene.unity        # 최신 플레이 테스트용 씬 (붐 UI 연결)
+│   └── SampleScene.unity      # 기본 샘플 씬
 ├── Scripts/                   # 게임플레이 C# 스크립트
 ├── Prefabs/                   # 플레이어·적·탄·아이템·붐 등
 ├── Animation/                 # 플레이어·아이템 애니메이션
@@ -99,7 +100,8 @@ ProjectSettings/               # Unity 프로젝트 설정
 1. **Unity Hub**에서 에디터 **6000.4.1f1**을 설치합니다.
 2. 이 저장소를 클론한 뒤 Hub에서 **Add**로 프로젝트 폴더를 엽니다.
 3. Unity가 **`Library` 폴더**를 자동 생성합니다. (저장소에는 **용량·GitHub 제한** 때문에 `Library/`가 포함되지 않습니다.)
-4. `Assets/Scenes/SampleScene.unity`를 연 뒤 **Play**로 실행합니다.
+4. 플레이 테스트는 `Assets/Scenes/GameScene.unity`를 우선 권장합니다.
+5. 실제 빌드는 `ProjectSettings/EditorBuildSettings.asset`의 활성 씬 목록을 확인한 뒤 진행하세요. (현재 활성 목록에는 `SampleScene`만 등록)
 
 ---
 
@@ -120,7 +122,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 
 ## 알려진 이슈·메모
 
-- `SampleScene`의 **`GameManager.boomImages`가 비어 있으면** 붐 슬롯 UI가 갱신되지 않습니다. 씬에 둔 `Boom_0`~`Boom_2`의 **Image 컴포넌트**를 배열에 할당했는지 확인하세요.
+- 씬별 설정 차이가 있습니다. `GameScene`은 `boomImages`가 연결되어 있고, `SampleScene`은 현재 `boomImages: []`입니다.
 - `EnemyGenerator` 안에는 여전히 `Enermys`, `SpawnEnermy()` 등 **옛 철자가 남은 식별자**가 있습니다. 전부 `Enemy`로 통일하려면 씬·프리팹 직렬화 필드명도 함께 손봐야 합니다.
 - `Player.Update`에 `Debug.Log`가 있어 **콘솔 스팸**이 될 수 있습니다.
 - 적 탄은 `Bullet` / `BulletController`에서 `type == "Enemy"` 문자열을 사용합니다. 프리팹의 `type` 필드와 맞춰야 합니다.
