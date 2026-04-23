@@ -73,7 +73,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 | `Player.cs` | 이동, 발사, 파워, 폭탄, 무적, 생명·점수 필드. `PlayerReset()`에서 `score`·`power`·`boomSlot` 초기화 |
 | `GameManager.cs` | 점수 TMP, 라이프/붐 UI, 게임 오버·재시작 연동 |
 | `EnemyController.cs` | 적 이동·체력·피격·드롭 아이템·플레이어/탄/붐 트리거 |
-| `EnemyGenerator.cs` | 적 프리팹 스폰 타이밍·방향·리지드바디 설정 *(일부 멤버·메서드 이름은 예전 `Enermy` 철자가 남아 있음)* |
+| `EnemyGenerator.cs` | 적 프리팹 스폰 타이밍·방향·리지드바디 설정 |
 | `Bullet.cs` / `BulletController.cs` | 플레이어·적 탄 이동·데미지·충돌 |
 | `Item.cs` | 코인/파워/붐 픽업 처리 |
 | `Boom.cs` | 폭탄 존재 시간 후 파괴 |
@@ -122,8 +122,9 @@ ProjectSettings/               # Unity 프로젝트 설정
 
 ## 알려진 이슈·메모
 
-
-
-
+- 씬별 설정 차이가 있습니다. `GameScene`은 `boomImages`가 연결되어 있고, `SampleScene`은 현재 `boomImages: []`입니다.
+- `EnemyGenerator`는 변수명을 `Enemies`로 정리했으며, 기존 씬/프리팹 호환을 위해 `FormerlySerializedAs("Enemys")`를 사용합니다.
+- `Player.Update`에 `Debug.Log`가 있어 **콘솔 스팸**이 될 수 있습니다.
+- 적 탄은 `Bullet` / `BulletController`에서 `type == "Enemy"` 문자열을 사용합니다. 프리팹의 `type` 필드와 맞춰야 합니다.
 
 문의나 개선 PR은 [Issues](https://github.com/maythird/2d-vertial-shooter/issues)를 이용해 주세요.

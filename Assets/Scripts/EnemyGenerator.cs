@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class EnemyGenerator : MonoBehaviour
 {
-    public GameObject[] Enemys;
+    [FormerlySerializedAs("Enemys")]
+    public GameObject[] Enemies;
     public Transform[] SpawnPoints;
     public Transform[] DestinationPoints;
 
@@ -34,9 +36,9 @@ public class EnemyGenerator : MonoBehaviour
 
     void SpawnEnemy()
     {
-        int ranEnermy = Random.Range(0, Enemys.Length);
+        int ranEnemy = Random.Range(0, Enemies.Length);
         int ranSpawnPoint = Random.Range(0, SpawnPoints.Length);
-        GameObject enemy = Instantiate(Enemys[ranEnermy], SpawnPoints[ranSpawnPoint].position,
+        GameObject enemy = Instantiate(Enemies[ranEnemy], SpawnPoints[ranSpawnPoint].position,
             SpawnPoints[ranSpawnPoint].rotation);
 
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();
