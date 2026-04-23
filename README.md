@@ -1,5 +1,7 @@
 # 2D Vertical Shooter (Study)
 
+**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-23
+
 골드메탈님의 **2D 종스크롤 슈팅** 튜토리얼을 따라 만든 Unity 학습용 프로젝트입니다.  
 에셋 팩 **Vertical 2D Shooting BE4**의 스프라이트·데모 리소스를 활용하고, 플레이어·적·탄·아이템·UI 로직은 `Assets/Scripts`에 구현되어 있습니다.
 
