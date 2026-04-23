@@ -56,19 +56,7 @@ public class Player : MonoBehaviour
         {
             return; // 👉 무적 중이면 아무 입력도 안 받음
         }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            if (power < 3)
-            {
-                power++;
-            }
-            else
-            {
-                power = 1;
-            }
-        }
-
+        
 
         if (Input.GetKey(KeyCode.Space))
         {
