@@ -52,7 +52,8 @@
 Assets/
 ├── Scenes/
 │   ├── GameScene.unity        # 최신 플레이 테스트용 씬 (붐 UI 연결)
-│   └── SampleScene.unity      # 기본 샘플 씬
+│   ├── SampleScene.unity      # 기본 샘플 씬
+│   └── Test.unity             # 실험/테스트용 씬
 ├── Scripts/                   # 게임플레이 C# 스크립트
 ├── Prefabs/                   # 플레이어·적·탄·아이템·붐 등
 ├── Animation/                 # 플레이어·아이템 애니메이션
@@ -101,7 +102,8 @@ ProjectSettings/               # Unity 프로젝트 설정
 2. 이 저장소를 클론한 뒤 Hub에서 **Add**로 프로젝트 폴더를 엽니다.
 3. Unity가 **`Library` 폴더**를 자동 생성합니다. (저장소에는 **용량·GitHub 제한** 때문에 `Library/`가 포함되지 않습니다.)
 4. 플레이 테스트는 `Assets/Scenes/GameScene.unity`를 우선 권장합니다.
-5. 실제 빌드는 `ProjectSettings/EditorBuildSettings.asset`의 활성 씬 목록을 확인한 뒤 진행하세요. (현재 활성 목록에는 `SampleScene`만 등록)
+5. 기능 실험이나 임시 검증은 `Assets/Scenes/Test.unity`에서 진행할 수 있습니다.
+6. 실제 빌드는 `ProjectSettings/EditorBuildSettings.asset`의 활성 씬 목록을 확인한 뒤 진행하세요. (현재 활성 목록에는 `SampleScene`만 등록)
 
 ---
 
