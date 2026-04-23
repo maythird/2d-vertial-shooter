@@ -1659,7 +1659,10 @@ MonoBehaviour:
   - {fileID: 1860708614}
   - {fileID: 948386679}
   - {fileID: 419914848}
-  boomImages: []
+  boomImages:
+  - {fileID: 1964212611}
+  - {fileID: 1827219675}
+  - {fileID: 1373115639}
   scoreText: {fileID: 176248517}
   GameOverSet: {fileID: 1885191415}
 --- !u!4 &799871498

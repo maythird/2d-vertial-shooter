@@ -211,6 +211,7 @@ public class Player : MonoBehaviour
     {
         score = 0;
         power = 1;
+        boomSlot = 1;
     }
 
     public void TakeDamage(int damage)
