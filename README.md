@@ -122,9 +122,8 @@ ProjectSettings/               # Unity 프로젝트 설정
 
 ## 알려진 이슈·메모
 
-- 씬별 설정 차이가 있습니다. `GameScene`은 `boomImages`가 연결되어 있고, `SampleScene`은 현재 `boomImages: []`입니다.
+
 - `EnemyGenerator` 안에는 여전히 `Enermys`, `SpawnEnermy()` 등 **옛 철자가 남은 식별자**가 있습니다. 전부 `Enemy`로 통일하려면 씬·프리팹 직렬화 필드명도 함께 손봐야 합니다.
-- `Player.Update`에 `Debug.Log`가 있어 **콘솔 스팸**이 될 수 있습니다.
-- 적 탄은 `Bullet` / `BulletController`에서 `type == "Enemy"` 문자열을 사용합니다. 프리팹의 `type` 필드와 맞춰야 합니다.
+
 
 문의나 개선 PR은 [Issues](https://github.com/maythird/2d-vertial-shooter/issues)를 이용해 주세요.
