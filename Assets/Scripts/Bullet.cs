@@ -17,7 +17,7 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (type == "Enermy")
+        if (type == "Enemy")
         {
             if (other.gameObject.tag == "Player")
             {

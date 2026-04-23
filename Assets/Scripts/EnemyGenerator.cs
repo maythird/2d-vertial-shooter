@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class EnermyGenerator : MonoBehaviour
+public class EnemyGenerator : MonoBehaviour
 {
-    public GameObject[] Enermys;
+    public GameObject[] Enemys;
     public Transform[] SpawnPoints;
     public Transform[] DestinationPoints;
 
@@ -24,7 +24,7 @@ public class EnermyGenerator : MonoBehaviour
         {
             if (player != null)
             {
-                SpawnEnermy();
+                SpawnEnemy();
             }
 
             delay = Random.Range(0.5f, 3f);
@@ -32,11 +32,11 @@ public class EnermyGenerator : MonoBehaviour
         }
     }
 
-    void SpawnEnermy()
+    void SpawnEnemy()
     {
-        int ranEnermy = Random.Range(0, Enermys.Length);
+        int ranEnermy = Random.Range(0, Enemys.Length);
         int ranSpawnPoint = Random.Range(0, SpawnPoints.Length);
-        GameObject enemy = Instantiate(Enermys[ranEnermy], SpawnPoints[ranSpawnPoint].position,
+        GameObject enemy = Instantiate(Enemys[ranEnermy], SpawnPoints[ranSpawnPoint].position,
             SpawnPoints[ranSpawnPoint].rotation);
 
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();

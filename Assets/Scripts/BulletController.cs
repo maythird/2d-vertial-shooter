@@ -22,7 +22,7 @@ public class BulletController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (type == "Enermy")
+        if (type == "Enemy")
         {
             Debug.Log("적 미사일 발사중");
             Debug.Log(direction);

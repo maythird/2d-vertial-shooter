@@ -1,6 +1,6 @@
 # 2D Vertical Shooter (Study)
 
-**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-24
+**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-25
 
 골드메탈님의 **2D 종스크롤 슈팅** 튜토리얼을 따라 만든 Unity 학습용 프로젝트입니다.  
 에셋 팩 **Vertical 2D Shooting BE4**의 스프라이트·데모 리소스를 활용하고, 플레이어·적·탄·아이템·UI 로직은 `Assets/Scripts`에 구현되어 있습니다.
@@ -28,8 +28,8 @@
 - **파워 단계 (1~3)**: 기본값은 1이며, **파워 아이템** 픽업으로만 단계가 올라갑니다(최대 3). 단계에 따라 탄 개수·배치가 달라짐 (`CreatePower1/2/3Bullet`). *(이전에 있던 마우스 우클릭 순환 입력은 제거됨.)*
 - **폭탄(Boom)**: `B` 키, 슬롯이 있을 때 소모하며 프리팹 생성 (`boomSlot`).
 - **무적·리스폰**: 피격 시 짧은 **무적 시간** 동안 입력 무시·콜라이더 비활성·투명 처리 후 시작 위치로 복귀 (`TakeDamage` / `invincibleTime`).
-- **적 스폰**: `EnermyGenerator`가 랜덤 간격으로 프리팹을 스폰 포인트에서 생성. 일부 스폰은 **대각선 이동**·`Rigidbody2D` 하강 등 패턴 분기.
-- **적 AI/탄**: `EnemyController`에서 이동·체력·점수·아이템 드롭 확률 처리. 이름 `"C"`인 적은 이중 탄 발사 등.
+- **적 스폰**: `EnemyGenerator`가 랜덤 간격으로 프리팹을 스폰 포인트에서 생성. 일부 스폰은 **대각선 이동**·`Rigidbody2D` 하강 등 패턴 분기.
+- **적 AI/탄**: `EnemyController`에서 이동·체력·점수·아이템 드롭 확률 처리. 이름 `"C"`인 적은 이중 탄 발사 등. 공용 적 탄 프리팹은 `EnemyBullet` 등으로 정리됨.
 - **아이템**: 코인·파워·붐 슬롯 (`Item` + `type` 문자열).
 - **UI**: TextMeshPro 점수, 생명·붐 아이콘 알파, 라이프 0 이하 시 **게임 오버** UI 및 오브젝트 정리 (`GameManager`).
 
@@ -72,7 +72,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 | `Player.cs` | 이동, 발사, 파워, 폭탄, 무적, 생명·점수 필드 |
 | `GameManager.cs` | 점수 TMP, 라이프/붐 UI, 게임 오버·재시작 연동 |
 | `EnemyController.cs` | 적 이동·체력·피격·드롭 아이템·플레이어/탄/붐 트리거 |
-| `EnermyGenerator.cs` | 적 프리팹 스폰 타이밍·방향·리지드바디 설정 *(클래스명 오타: Enermy)* |
+| `EnemyGenerator.cs` | 적 프리팹 스폰 타이밍·방향·리지드바디 설정 *(일부 멤버·메서드 이름은 예전 `Enermy` 철자가 남아 있음)* |
 | `Bullet.cs` / `BulletController.cs` | 플레이어·적 탄 이동·데미지·충돌 |
 | `Item.cs` | 코인/파워/붐 픽업 처리 |
 | `Boom.cs` | 폭탄 존재 시간 후 파괴 |
@@ -120,8 +120,8 @@ ProjectSettings/               # Unity 프로젝트 설정
 
 ## 알려진 이슈·메모
 
-- 클래스·변수명에 **`Enermy`/`Enermys` 등 오타**가 있습니다. 리팩터 시 프리팹·씬 참조를 함께 바꿔야 합니다.
+- `EnemyGenerator` 안에는 여전히 `Enermys`, `SpawnEnermy()` 등 **옛 철자가 남은 식별자**가 있습니다. 전부 `Enemy`로 통일하려면 씬·프리팹 직렬화 필드명도 함께 손봐야 합니다.
 - `Player.Update`에 `Debug.Log`가 있어 **콘솔 스팸**이 될 수 있습니다.
-- 적 탄 `BulletController`에서 `type == "Enermy"` 문자열을 사용합니다 (오타와 일치 필요).
+- 적 탄은 `Bullet` / `BulletController`에서 `type == "Enemy"` 문자열을 사용합니다. 프리팹의 `type` 필드와 맞춰야 합니다.
 
 문의나 개선 PR은 [Issues](https://github.com/maythird/2d-vertial-shooter/issues)를 이용해 주세요.

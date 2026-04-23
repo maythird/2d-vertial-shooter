@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 206201962}
   - component: {fileID: 206201961}
   m_Layer: 0
-  m_Name: EnermyGenerator
+  m_Name: EnemyGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -483,7 +483,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ba74c21441d36b46a3db493a80fa71b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnermyGenerator
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyGenerator
   Enermys:
   - {fileID: 3203071755382832401, guid: fb26d7538fb742743991482dc723a0c6, type: 3}
   - {fileID: 7704575822051136087, guid: 9ff6cff979224d1498fafacd7a40e6ca, type: 3}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5912047750775870662}
   - component: {fileID: -8904180596993568282}
   m_Layer: 0
-  m_Name: EnermyBullet
+  m_Name: EnemyBullet
   m_TagString: EnemyBullets
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ca357d7736c6884c952c898811d9ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletController
-  type: Enermy
+  type: Enemy
