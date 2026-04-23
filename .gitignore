@@ -1,42 +1,13 @@
-# Unity generated folders
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Ll]ogs/
-UserSettings/
-MemoryCaptures/
+# --- Git에 올리는 것: Assets/, Packages/, ProjectSettings/, README.md (+ 이 .gitignore) ---
+# 아래는 화이트리스트: 위 항목만 추적하고 나머지 경로는 무시합니다.
 
-# Addressables and generated assets
-Assets/AddressableAssetsData/*/*.bin*
-
-# Auto-generated VS/JetBrains files
-.vs/
-.idea/
-*.csproj
-*.unityproj
-*.sln
-*.suo
-*.tmp
-*.user
-*.userprefs
-*.pidb
-*.booproj
-*.svd
-*.pdb
-*.mdb
-*.opendb
-*.VC.db
-
-# Unity cache and package logs
-Packages/packages-lock.json
-
-# Crash reports and profiling
-sysinfo.txt
-*.stacktrace
-*.crash
-
-# OS/editor files
-.DS_Store
-Thumbs.db
+# 모든 항목 무시 후 허용 목록만 예외 처리
+*
+!/.gitignore
+!/README.md
+!/Assets/
+!/Assets/**
+!/Packages/
+!/Packages/**
+!/ProjectSettings/
+!/ProjectSettings/**

@@ -105,8 +105,8 @@ ProjectSettings/               # Unity 프로젝트 설정
 
 ## Git / 협업 참고
 
-- `.gitignore`에 **`Library/`**, `Temp/`, `Logs/`, `obj/` 등 Unity 생성 경로가 제외되어 있습니다. 처음 연 사람은 **에디터로 한 번 열어** 로컬 `Library`를 만든 뒤 플레이하세요.
-- `UserSettings/`, `*.csproj`, `.sln` 등은 저장소에 포함될 수 있습니다. 팀 규칙에 따라 무시하도록 조정할 수 있습니다.
+- 이 저장소는 **루트 `.gitignore` 화이트리스트**로, Git에 올라가는 것은 **`Assets/`**, **`Packages/`**, **`ProjectSettings/`**, **`README.md`**(및 규칙 유지용 **`.gitignore`**)뿐입니다.
+- `Library/`, `Temp/`, `Logs/`, `obj/`, `UserSettings/`, `*.csproj`, `.sln`, `.idea/` 등은 **추적되지 않습니다.** 클론 후 Unity로 프로젝트를 열면 로컬에 자동 생성됩니다.
 
 ---
 
