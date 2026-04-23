@@ -141,10 +141,10 @@ MonoBehaviour:
   sprites:
   - {fileID: -8421458170528590454, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   - {fileID: 3714015224569861163, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
-  health: 30
+  health: 20
   speed: 1.5
   name: C
-  enemyScore: 100
+  enemyScore: 1000
   player: {fileID: 0}
   dir: {x: 0, y: 0, z: 0}
   bulletObjA: {fileID: 2483737413557090787, guid: 7026529ada7afe04b87d7a256b3c69f6, type: 3}

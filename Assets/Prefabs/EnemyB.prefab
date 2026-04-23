@@ -109,10 +109,10 @@ MonoBehaviour:
   sprites:
   - {fileID: -1147401495359466748, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   - {fileID: -7844560889915226194, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
-  health: 10
+  health: 8
   speed: 4
   name: B
-  enemyScore: 50
+  enemyScore: 500
   player: {fileID: 0}
   dir: {x: 0, y: 0, z: 0}
   bulletObjA: {fileID: 0}

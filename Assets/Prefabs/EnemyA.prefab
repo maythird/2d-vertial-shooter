@@ -112,7 +112,7 @@ MonoBehaviour:
   health: 3
   speed: 3
   name: A
-  enemyScore: 10
+  enemyScore: 100
   player: {fileID: 0}
   dir: {x: 0, y: 0, z: 0}
   bulletObjA: {fileID: 0}
