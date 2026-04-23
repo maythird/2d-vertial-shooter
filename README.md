@@ -53,9 +53,10 @@ Assets/
 ├── Scenes/
 │   ├── GameScene.unity        # 최신 플레이 테스트용 씬 (붐 UI 연결)
 │   ├── SampleScene.unity      # 기본 샘플 씬
-│   └── Test.unity             # 실험/테스트용 씬
+│   └── (Test.unity 제거됨)
 ├── Scripts/                   # 게임플레이 C# 스크립트
 ├── Prefabs/                   # 플레이어·적·탄·아이템·붐 등
+├── Test/                      # 실험용 별도 리소스(씬/스크립트/프리팹)
 ├── Animation/                 # 플레이어·아이템 애니메이션
 ├── Settings/                  # URP 등 렌더/씬 템플릿
 ├── TextMesh Pro/              # TMP 리소스·폰트
@@ -72,7 +73,8 @@ ProjectSettings/               # Unity 프로젝트 설정
 | 스크립트 | 역할 |
 |----------|------|
 | `Player.cs` | 이동, 발사, 파워, 폭탄, 무적, 생명·점수 필드. `PlayerReset()`에서 `score`·`power`·`boomSlot` 초기화 |
-| `GameManager.cs` | 점수 TMP, 라이프/붐 UI, 게임 오버·재시작 연동 |
+| `UIManager.cs` | 점수 TMP, 라이프/붐 UI, 게임 오버·재시작 연동 |
+| `GameManager.cs` | `DontDestroyOnLoad` 싱글톤 오브젝트 관리(전역 매니저 틀) |
 | `EnemyController.cs` | 적 이동·체력·피격·드롭 아이템·플레이어/탄/붐 트리거 |
 | `EnemyGenerator.cs` | 적 프리팹 스폰 타이밍·방향·리지드바디 설정 |
 | `Bullet.cs` / `BulletController.cs` | 플레이어·적 탄 이동·데미지·충돌 |
@@ -102,7 +104,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 2. 이 저장소를 클론한 뒤 Hub에서 **Add**로 프로젝트 폴더를 엽니다.
 3. Unity가 **`Library` 폴더**를 자동 생성합니다. (저장소에는 **용량·GitHub 제한** 때문에 `Library/`가 포함되지 않습니다.)
 4. 플레이 테스트는 `Assets/Scenes/GameScene.unity`를 우선 권장합니다.
-5. 기능 실험이나 임시 검증은 `Assets/Scenes/Test.unity`에서 진행할 수 있습니다.
+5. 기능 실험용 씬은 현재 `Assets/Test/Scenes/Test.unity`에 분리되어 있습니다.
 6. 실제 빌드는 `ProjectSettings/EditorBuildSettings.asset`의 활성 씬 목록을 확인한 뒤 진행하세요. (현재 활성 목록에는 `SampleScene`만 등록)
 
 ---
@@ -126,7 +128,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 
 - 씬별 설정 차이가 있습니다. `GameScene`은 `boomImages`가 연결되어 있고, `SampleScene`은 현재 `boomImages: []`입니다.
 - `EnemyGenerator`는 변수명을 `Enemies`로 정리했으며, 기존 씬/프리팹 호환을 위해 `FormerlySerializedAs("Enemys")`를 사용합니다.
-- `Player.Update`에 `Debug.Log`가 있어 **콘솔 스팸**이 될 수 있습니다.
-- 적 탄은 `Bullet` / `BulletController`에서 `type == "Enemy"` 문자열을 사용합니다. 프리팹의 `type` 필드와 맞춰야 합니다.
+- `UIManager`, `EnemyGenerator`, `BulletController` 등에 `Debug.Log`가 남아 있어 **콘솔 스팸**이 발생할 수 있습니다.
+- `BulletController`는 `enum Type`(`Player` / `Enemy`)을 사용하므로, 프리팹 인스펙터의 `type` 값이 정확해야 합니다.
 
 문의나 개선 PR은 [Issues](https://github.com/maythird/2d-vertial-shooter/issues)를 이용해 주세요.

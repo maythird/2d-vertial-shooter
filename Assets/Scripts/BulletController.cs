@@ -2,7 +2,13 @@ using UnityEngine;
 
 public class BulletController : MonoBehaviour
 {
-    public string type;
+    public enum Type
+    {
+        None,
+        Player,
+        Enemy
+    }
+    public Type type;
     private Vector3 direction;
     Transform playerTransform;
 
@@ -22,13 +28,13 @@ public class BulletController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (type == "Enemy")
+        if (type == Type.Enemy)
         {
             Debug.Log("적 미사일 발사중");
             Debug.Log(direction);
             transform.Translate(direction * 5 * Time.deltaTime, Space.World);
         }
-        else if (type == "Player")
+        else if (type == Type.Player)
         {
             transform.Translate(0, 5 * Time.deltaTime, 0);
         }

@@ -3,7 +3,14 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public int damage;
-    public string type;
+
+    public enum Type
+    {
+        None,
+        Player,
+        Enemy
+    }
+    public Type type;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -17,7 +24,7 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (type == "Enemy")
+        if (type == Type.Enemy)
         {
             if (other.gameObject.tag == "Player")
             {
