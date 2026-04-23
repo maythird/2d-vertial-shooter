@@ -1,0 +1,42 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+
+# Addressables and generated assets
+Assets/AddressableAssetsData/*/*.bin*
+
+# Auto-generated VS/JetBrains files
+.vs/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity cache and package logs
+Packages/packages-lock.json
+
+# Crash reports and profiling
+sysinfo.txt
+*.stacktrace
+*.crash
+
+# OS/editor files
+.DS_Store
+Thumbs.db
