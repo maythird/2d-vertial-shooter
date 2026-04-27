@@ -11,15 +11,12 @@ public class EnemyController : MonoBehaviour
     public GameObject player;
     public Vector3 dir;
 
+    private bool isDead = false;
     private float _fireTimer = 0;
     private float fireRate = 1.5f;
     public GameObject bulletObjA;
     public GameObject bulletObj;
 
-    //아이템관련
-    public GameObject itemBoom;
-    public GameObject itemPower;
-    public GameObject itemCoin;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -51,6 +48,8 @@ public class EnemyController : MonoBehaviour
 
     void OnHit(int damage)
     {
+        if (isDead) return;
+
         Player playerScript = player.GetComponent<Player>();
         health -= damage;
         sr.sprite = sprites[1];
@@ -58,30 +57,9 @@ public class EnemyController : MonoBehaviour
 
         if (health <= 0)
         {
+            isDead = true;
             playerScript.score += enemyScore;
-
-
-            int itemRan = Random.Range(0, 10);
-            if (itemRan < 3) // Not Item 30%
-            {
-                Debug.Log("Not Item");
-            }
-            else if (itemRan < 6) //Coin 30%
-            {
-                Instantiate(itemCoin, transform.position, itemCoin.transform.rotation);
-            }
-            else if (itemRan < 8) //Power 20%
-            {
-                if (playerScript.power < 3)
-                {
-                    Instantiate(itemPower, transform.position, itemPower.transform.rotation);
-                }
-            }
-            else if (itemRan < 10) //Boom 20%
-            {
-                Instantiate(itemBoom, transform.position, itemBoom.transform.rotation);
-            }
-
+            ItemManager.Instance.DropItem(transform.position, playerScript.power);
             Destroy(gameObject);
         }
     }
@@ -127,11 +105,6 @@ public class EnemyController : MonoBehaviour
         {
             Player playerScript = other.GetComponent<Player>();
             playerScript.TakeDamage(1);
-        }
-        else if (other.gameObject.tag == "Boom")
-        {
-            Boom boom = other.gameObject.GetComponent<Boom>();
-            OnHit(boom.damage);
         }
     }
 }

@@ -2,23 +2,15 @@ using UnityEngine;
 
 public class Boom : MonoBehaviour
 {
-    private float timer;
-    private float delayTime = 1f;
+    public float duration = 2f;
 
-    public int damage;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-    }
+        foreach (var go in GameObject.FindGameObjectsWithTag("Enemy"))
+            Destroy(go);
+        foreach (var go in GameObject.FindGameObjectsWithTag("EnemyBullets"))
+            Destroy(go);
 
-    // Update is called once per frame
-    void Update()
-    {
-        timer += Time.deltaTime;
-        if (timer >= delayTime)
-        {
-            Destroy(gameObject);
-        }
+        Destroy(gameObject, duration);
     }
 }

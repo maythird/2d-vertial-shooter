@@ -8,127 +8,94 @@ public class UIManager : MonoBehaviour
     public Image[] boomImages;
     private GameObject player;
     public TextMeshProUGUI scoreText;
-    private string score;
-
+    public GameObject background;
     public GameObject GameOverSet;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void OnEnable()
+    {
+        GameManager.OnGameOver += ShowGameOver;
+        GameManager.OnRestart += HideGameOver;
+    }
+
+    void OnDisable()
+    {
+        GameManager.OnGameOver -= ShowGameOver;
+        GameManager.OnRestart -= HideGameOver;
+    }
+
     void Start()
     {
         player = GameObject.Find("Player");
+        GameOverSet.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (player != null)
-        {
-            UiManager();
-            UpdateLifeIcon();
-            UpdateBoomIcon();
+        if (player == null || GameManager.Instance.State != GameState.Playing) return;
 
-            Player playerScript = player.GetComponent<Player>();
-            score = playerScript.score.ToString("N0");
-            if (playerScript.life > 0)
-            {
-                scoreText.text = score;
-            }
-            else
-            {
-                scoreText.text = "";
-            }
-        }
+        UpdateLifeIcon();
+        UpdateBoomIcon();
+
+        Player playerScript = player.GetComponent<Player>();
+        scoreText.text = playerScript.score.ToString("N0");
     }
 
     public void UpdateLifeIcon()
     {
         Player playerScript = player.GetComponent<Player>();
         int life = playerScript.life;
-        Debug.Log($"Player life :{life}");
         for (int i = 0; i < 3; i++)
-        {
             lifeImages[i].color = new Color(1, 1, 1, 0);
-        }
-
         for (int i = 0; i < life; i++)
-        {
             lifeImages[i].color = new Color(1, 1, 1, 1);
-        }
     }
 
     public void UpdateBoomIcon()
     {
         Player playerScript = player.GetComponent<Player>();
         int boomSlot = playerScript.boomSlot;
-        Debug.Log($"Player boomSlot :{boomSlot}");
         for (int i = 0; i < 3; i++)
-        {
             boomImages[i].color = new Color(1, 1, 1, 0);
-        }
-
         for (int i = 0; i < boomSlot; i++)
-        {
             boomImages[i].color = new Color(1, 1, 1, 1);
-        }
     }
 
     public void lifeMinus()
     {
         Player playerScript = player.GetComponent<Player>();
-
         if (playerScript.life > 0)
-        {
             playerScript.life--;
-        }
-
-        Debug.Log($"life :{playerScript.life}");
     }
 
-    public void UiManager()
+    void ShowGameOver()
     {
-        Player playerScript = player.GetComponent<Player>();
-        if (playerScript.life <= 0)
-        {
-            playerScript.PlayerReset();
-            GameObject[] Bullets = GameObject.FindGameObjectsWithTag("Bullets");
-            GameObject[] EnemyBullets = GameObject.FindGameObjectsWithTag("EnemyBullets");
-            GameObject[] Enemy = GameObject.FindGameObjectsWithTag("Enemy");
+        player.GetComponent<Player>().PlayerReset();
+        background.SetActive(false);
+        player.SetActive(false);
+        SetHudActive(false);
+        GameOverSet.SetActive(true);
+    }
 
-            for (int i = 0; i < Bullets.Length; i++)
-            {
-                Destroy(Bullets[i]);
-            }
+    void HideGameOver()
+    {
+        player.GetComponent<Player>().life = 3;
+        background.SetActive(true);
+        player.SetActive(true);
+        SetHudActive(true);
+        GameOverSet.SetActive(false);
+    }
 
-            for (int i = 0; i < EnemyBullets.Length; i++)
-            {
-                Destroy(EnemyBullets[i]);
-            }
-
-            for (int i = 0; i < Enemy.Length; i++)
-            {
-                Destroy(Enemy[i]);
-            }
-            playerScript.boomSlot = 0;
-
-            player.SetActive(false);
-            GameOverSet.SetActive(true);
-        }
-        else
-        {
-            GameOverSet.SetActive(false);
-            player.SetActive(true);
-        }
+    void SetHudActive(bool active)
+    {
+        foreach (var img in lifeImages)
+            img.gameObject.SetActive(active);
+        foreach (var img in boomImages)
+            img.gameObject.SetActive(active);
+        scoreText.gameObject.SetActive(active);
     }
 
     public void Restart()
     {
-        if (player != null)
-        {
-            Player playerScript = player.GetComponent<Player>();
-            if (playerScript.life <= 0)
-            {
-                playerScript.life = 3;
-            }
-        }
+        GameManager.Instance.Restart();
     }
 }

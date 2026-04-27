@@ -219,10 +219,15 @@ public class Player : MonoBehaviour
         if (isInvincible) return;
         life -= damage;
 
+        if (life <= 0)
+        {
+            GameManager.Instance.NotifyPlayerDead();
+            return;
+        }
+
         isInvincible = true;
         sr.color = new Color(1, 1, 1, 0);
         invincibleEndTime = Time.time + invincibleTime;
-
-        col.enabled = false; // 👉 충돌 OFF
+        col.enabled = false;
     }
 }

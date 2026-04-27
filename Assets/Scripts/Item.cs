@@ -1,55 +1,58 @@
+using System.Collections;
 using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    public string type;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public enum ItemType
     {
+        Coin,
+        Boom,
+        Power
     }
 
-    // Update is called once per frame
-    void Update()
+    public ItemType itemType;
+    public float speed = 1f;
+
+    public IEnumerator Move()
     {
-        transform.Translate(Vector3.down * Time.deltaTime);
+        while (true)
+        {
+            if (this == null) yield break;
+            transform.Translate(Vector3.down * speed * Time.deltaTime);
+            if (transform.position.y <= -5.5f) break;
+            yield return null;
+        }
+        Destroy(gameObject);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("충돌");
-        if (other.tag == "Player")
+        if (other.tag != "Player") return;
+
+        Player player = other.gameObject.GetComponent<Player>();
+
+        switch (itemType)
         {
-            Player player = other.gameObject.GetComponent<Player>();
-
-            switch (type)
-            {
-                case "Coin":
-                    player.score += 1000;
-                    Debug.Log("코인충돌확인");
+            case ItemType.Coin:
+                player.score += 1000;
+                Destroy(gameObject);
+                break;
+            case ItemType.Power:
+                if (player.power < 3)
+                {
+                    player.score += 500;
+                    player.power++;
+                }
+                Destroy(gameObject);
+                break;
+            case ItemType.Boom:
+                if (player.boomSlot < 3)
+                {
+                    player.score += 500;
+                    player.boomSlot++;
                     Destroy(gameObject);
-                    break;
-                case "Power":
-                    if (player.power < 3)
-                    {
-                        player.score += 500;
-                        player.power++;
-                        Destroy(gameObject);
-                    }
-
-                    Debug.Log("파워충돌확인");
-                    break;
-                case "Boom":
-                    if (player.boomSlot < 3)
-                    {
-                        player.score += 500;
-                        player.boomSlot++;
-                        Destroy(gameObject);
-                    }
-
-                    Debug.Log($"폭탄충돌확인 BoomSlot: {player.boomSlot}");
-                    break;
-            }
+                }
+                break;
         }
     }
 }
