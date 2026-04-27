@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+
     public Transform firePoint;
     public GameObject BulletPrefab;
     public GameObject PlayerBulletPrefab;
@@ -27,7 +29,16 @@ public class Player : MonoBehaviour
 
     public GameObject PlayerSmallBulletPrefab;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
     void Start()
     {
         Application.targetFrameRate = 60;

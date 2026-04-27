@@ -10,19 +10,11 @@ public class BulletController : MonoBehaviour
     }
     public Type type;
     private Vector3 direction;
-    Transform playerTransform;
 
-    GameObject playerGo;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        playerGo = GameObject.Find("Player");
-        if (playerGo != null)
-        {
-            playerTransform = GameObject.Find("Player").transform;
-            direction = (playerTransform.position - transform.position).normalized;
-        }
+        if (Player.Instance != null)
+            direction = (Player.Instance.transform.position - transform.position).normalized;
     }
 
     // Update is called once per frame

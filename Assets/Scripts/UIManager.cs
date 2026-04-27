@@ -4,12 +4,24 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance { get; private set; }
+
     public Image[] lifeImages;
     public Image[] boomImages;
-    private GameObject player;
+    private Player player;
     public TextMeshProUGUI scoreText;
     public GameObject background;
     public GameObject GameOverSet;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     void OnEnable()
     {
@@ -25,7 +37,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        player = GameObject.Find("Player");
+        player = Player.Instance;
         GameOverSet.SetActive(false);
     }
 
@@ -35,52 +47,45 @@ public class UIManager : MonoBehaviour
 
         UpdateLifeIcon();
         UpdateBoomIcon();
-
-        Player playerScript = player.GetComponent<Player>();
-        scoreText.text = playerScript.score.ToString("N0");
+        scoreText.text = player.score.ToString("N0");
     }
 
     public void UpdateLifeIcon()
     {
-        Player playerScript = player.GetComponent<Player>();
-        int life = playerScript.life;
         for (int i = 0; i < 3; i++)
             lifeImages[i].color = new Color(1, 1, 1, 0);
-        for (int i = 0; i < life; i++)
+        for (int i = 0; i < player.life; i++)
             lifeImages[i].color = new Color(1, 1, 1, 1);
     }
 
     public void UpdateBoomIcon()
     {
-        Player playerScript = player.GetComponent<Player>();
-        int boomSlot = playerScript.boomSlot;
         for (int i = 0; i < 3; i++)
             boomImages[i].color = new Color(1, 1, 1, 0);
-        for (int i = 0; i < boomSlot; i++)
+        for (int i = 0; i < player.boomSlot; i++)
             boomImages[i].color = new Color(1, 1, 1, 1);
     }
 
     public void lifeMinus()
     {
-        Player playerScript = player.GetComponent<Player>();
-        if (playerScript.life > 0)
-            playerScript.life--;
+        if (player.life > 0)
+            player.life--;
     }
 
     void ShowGameOver()
     {
-        player.GetComponent<Player>().PlayerReset();
+        player.PlayerReset();
         background.SetActive(false);
-        player.SetActive(false);
+        player.gameObject.SetActive(false);
         SetHudActive(false);
         GameOverSet.SetActive(true);
     }
 
     void HideGameOver()
     {
-        player.GetComponent<Player>().life = 3;
+        player.life = 3;
         background.SetActive(true);
-        player.SetActive(true);
+        player.gameObject.SetActive(true);
         SetHudActive(true);
         GameOverSet.SetActive(false);
     }

@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour
 {
-    public static ItemManager Instance;
+    public static ItemManager Instance { get; private set; }
 
     public GameObject itemCoin;
     public GameObject itemBoom;
     public GameObject itemPower;
 
-    private void Awake()
+    void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 

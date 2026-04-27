@@ -8,17 +8,9 @@ public class EnemyGenerator : MonoBehaviour
     public Transform[] SpawnPoints;
     public Transform[] DestinationPoints;
 
-    private GameObject player;
     private float delay;
     private float waitTime;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        player = GameObject.Find("Player");
-    }
-
-    // Update is called once per frame
     void Update()
     {
         if (GameManager.Instance.State != GameState.Playing) return;
@@ -26,10 +18,8 @@ public class EnemyGenerator : MonoBehaviour
         waitTime += Time.deltaTime;
         if (waitTime >= delay)
         {
-            if (player != null)
-            {
+            if (Player.Instance != null)
                 SpawnEnemy();
-            }
 
             delay = Random.Range(0.5f, 3f);
             waitTime = 0;
@@ -45,7 +35,6 @@ public class EnemyGenerator : MonoBehaviour
 
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();
         EnemyController enemyLogic = enemy.GetComponent<EnemyController>();
-        enemyLogic.player = player;
         if (ranSpawnPoint == 5 || ranSpawnPoint == 6)
         {
             int ranDestinationPoint = Random.Range(2, 4);

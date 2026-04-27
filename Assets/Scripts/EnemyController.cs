@@ -8,12 +8,11 @@ public class EnemyController : MonoBehaviour
     public float speed;
     public string name;
     public int enemyScore;
-    public GameObject player;
     public Vector3 dir;
 
     private bool isDead = false;
     private float _fireTimer = 0;
-    private float fireRate = 1.5f;
+    private float fireRate = 2f;
     public GameObject bulletObjA;
     public GameObject bulletObj;
 
@@ -22,7 +21,6 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
-        player = GameObject.Find("Player");
     }
 
     // Update is called once per frame
@@ -50,7 +48,6 @@ public class EnemyController : MonoBehaviour
     {
         if (isDead) return;
 
-        Player playerScript = player.GetComponent<Player>();
         health -= damage;
         sr.sprite = sprites[1];
         Invoke("ReturnDefalutSprite", 0.1f);
@@ -58,8 +55,8 @@ public class EnemyController : MonoBehaviour
         if (health <= 0)
         {
             isDead = true;
-            playerScript.score += enemyScore;
-            ItemManager.Instance.DropItem(transform.position, playerScript.power);
+            Player.Instance.score += enemyScore;
+            ItemManager.Instance.DropItem(transform.position, Player.Instance.power);
             Destroy(gameObject);
         }
     }
