@@ -1,6 +1,6 @@
 # SpaceShooter (Unity 6 URP)
 
-**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-27
+**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-27 · 오브젝트 풀링 추가
 
 골드메탈님의 **2D 종스크롤 슈팅** 튜토리얼을 따라 만든 Unity 학습용 프로젝트입니다.  
 에셋 팩 **Vertical 2D Shooting BE4**의 스프라이트·데모 리소스를 활용하고, 플레이어·적·탄·아이템·UI 로직은 `Assets/Scripts`에 구현되어 있습니다.
@@ -31,6 +31,7 @@
 - **적 스폰**: `EnemyGenerator`가 랜덤 간격으로 프리팹을 스폰 포인트에서 생성. **게임오버 상태에서는 스폰 중지**.
 - **아이템 드롭**: `ItemManager`가 확률·중복·파워 상한 조건을 관리. 종류별(코인·파워·붐) 최대 1개씩만 화면에 존재.
 - **게임 오버**: 생명 0 → `GameManager`가 상태 전환·필드 정리·이벤트 발행 → `UIManager`가 HUD 숨김 및 게임오버 화면 표시. 재시작 버튼으로 복구.
+- **오브젝트 풀링**: `PoolManager` 싱글톤이 적·탄·아이템 풀을 중앙 관리. `Instantiate`/`Destroy` 대신 `Get`/`Release`로 GC 부하 최소화.
 
 ---
 
@@ -73,10 +74,12 @@ ProjectSettings/               # Unity 프로젝트 설정
 | `UIManager.cs` | 점수 TMP·라이프/붐 HUD. `GameManager` 이벤트 구독으로 게임오버·재시작 UI 처리. **싱글톤** |
 | `GameManager.cs` | `GameState` 관리(`Playing`/`GameOver`). `OnGameOver`·`OnRestart` 이벤트 발행. 필드 정리. **싱글톤** (`DontDestroyOnLoad`) |
 | `ItemManager.cs` | 아이템 드롭 확률·중복 제한·파워 상한 체크·생성 관리. **싱글톤** |
-| `EnemyController.cs` | 적 이동·체력·피격·사망 시 아이템 드롭. `isDead` 플래그로 중복 드롭 방지 |
+| `PoolManager.cs` | 적·탄·아이템 오브젝트 풀 중앙 관리. Inspector에서 프리팹·예열 수 등록. **싱글톤** |
+| `ObjectPool.cs` | 단일 프리팹용 풀 구현. `Get`(꺼내기)·`Release`(반환) API 제공 |
+| `EnemyController.cs` | 적 이동·체력·피격·사망 시 아이템 드롭. `isDead` 플래그로 중복 드롭 방지. `OnEnable`에서 체력 초기화 |
 | `EnemyGenerator.cs` | 적 스폰 타이밍·방향 설정. `GameState.Playing` 일 때만 동작 |
-| `Bullet.cs` / `BulletController.cs` | 플레이어·적 탄 이동·데미지·충돌 |
-| `Item.cs` | `ItemType` enum(Coin·Power·Boom) 기반 픽업 처리 |
+| `Bullet.cs` / `BulletController.cs` | 플레이어·적 탄 이동·데미지·충돌. 풀 반환 처리 포함 |
+| `Item.cs` | `ItemType` enum(Coin·Power·Boom) 기반 픽업 처리. `OnEnable`에서 이동 코루틴 시작 |
 | `Boom.cs` | 사용 시 전체 Enemy·EnemyBullet 제거 후 애니메이션 재생, `duration` 후 소멸 |
 | `BackGround.cs` | 배경 자동 스크롤 및 타일 재배치 루프 |
 | `DrawArrow.cs` | 디버그용 화살표 표시 (스폰 방향 등) |
@@ -94,10 +97,11 @@ Player.Instance
 GameManager.Instance   ──→ OnGameOver / OnRestart (event)
 ItemManager.Instance                                  │
 UIManager.Instance     ←───────────────────────────── ┘
+PoolManager.Instance   ←── EnemyController / BulletController / Item / ItemManager / EnemyGenerator
 ```
 
 - `GameManager`: `DontDestroyOnLoad` 적용 (씬 전환 유지)
-- `ItemManager` / `UIManager` / `Player`: 씬 종속, 중복 시 자동 제거
+- `ItemManager` / `UIManager` / `Player` / `PoolManager`: 씬 종속, 중복 시 자동 제거
 
 ---
 
@@ -119,7 +123,8 @@ UIManager.Instance     ←──────────────────
 2. 이 저장소를 클론한 뒤 Hub에서 **Add**로 프로젝트 폴더를 엽니다.
 3. Unity가 **`Library` 폴더**를 자동 생성합니다. (저장소에는 포함되지 않습니다.)
 4. 플레이 테스트는 `Assets/Scenes/GameScene.unity`를 우선 권장합니다.
-5. `GameManager`, `ItemManager` 오브젝트가 씬에 배치되어 있어야 정상 동작합니다.
+5. `GameManager`, `ItemManager`, **`PoolManager`** 오브젝트가 씬에 배치되어 있어야 정상 동작합니다.
+6. `PoolManager` Inspector의 **Entries**에 적·탄·아이템 프리팹을 등록하고 Warm Up 수를 설정하세요.
 
 ---
 
@@ -143,6 +148,7 @@ UIManager.Instance     ←──────────────────
 - `EnemyGenerator`는 변수명을 `Enemies`로 정리했으며, 기존 씬/프리팹 호환을 위해 `FormerlySerializedAs("Enemys")`를 유지합니다.
 - `BulletController`는 `enum Type`(`Player`/`Enemy`)을 사용하므로, 프리팹 인스펙터의 `type` 값이 정확해야 합니다.
 - `Item` 프리팹의 `itemType`은 `ItemManager`가 생성 시 직접 주입하므로, 인스펙터 설정값과 무관하게 동작합니다.
-- 일부 `Debug.Log`가 남아있어 콘솔 스팸이 발생할 수 있습니다.
+- `PoolManager`에 등록되지 않은 프리팹을 `Get`하면 런타임 오류가 발생합니다. 적·탄·아이템 프리팹을 반드시 Entries에 추가하세요.
+- 플레이어 탄은 `PlayerBulletPrefab`(Power 3 중앙)과 `PlayerSmallBulletPrefab`(Power 1·2·3 측면)으로 독립 구성되어 있습니다. 두 프리팹 모두 `BulletController`와 `Bullet` 컴포넌트를 포함해야 합니다.
 
 문의나 개선 PR은 [Issues](https://github.com/maythird/2d-vertial-shooter/issues)를 이용해 주세요.
