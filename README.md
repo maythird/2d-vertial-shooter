@@ -1,6 +1,6 @@
-# 2D Vertical Shooter (Study)
+# 2D Vertical Shooter Study (Unity 6 URP)
 
-**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-23
+**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-27
 
 골드메탈님의 **2D 종스크롤 슈팅** 튜토리얼을 따라 만든 Unity 학습용 프로젝트입니다.  
 에셋 팩 **Vertical 2D Shooting BE4**의 스프라이트·데모 리소스를 활용하고, 플레이어·적·탄·아이템·UI 로직은 `Assets/Scripts`에 구현되어 있습니다.
@@ -30,8 +30,8 @@
 - **무적·리스폰**: 피격 시 짧은 **무적 시간** 동안 입력 무시·콜라이더 비활성·투명 처리 후 시작 위치로 복귀 (`TakeDamage` / `invincibleTime`). **`Player.PlayerReset()`**에서는 점수·파워와 함께 **`boomSlot`을 1로** 되돌립니다.
 - **적 스폰**: `EnemyGenerator`가 랜덤 간격으로 프리팹을 스폰 포인트에서 생성. 일부 스폰은 **대각선 이동**·`Rigidbody2D` 하강 등 패턴 분기.
 - **적 AI/탄**: `EnemyController`에서 이동·체력·점수·아이템 드롭 확률 처리. 이름 `"C"`인 적은 이중 탄 발사 등. 공용 적 탄 프리팹은 `EnemyBullet` 등으로 정리됨.
-- **아이템**: 코인·파워·붐 슬롯 (`Item` + `type` 문자열).
-- **UI**: TextMeshPro 점수, 생명·붐 아이콘 알파, 라이프 0 이하 시 **게임 오버** UI 및 오브젝트 정리 (`GameManager`). `GameScene`은 `GameManager.boomImages`가 연결되어 있고, `SampleScene`은 비어 있어 씬에 따라 붐 슬롯 UI 동작이 다를 수 있습니다.
+- **아이템**: 코인·파워·붐 슬롯(`Item.ItemType` enum). 드롭은 `ItemManager`에서 확률/중복 제한으로 관리.
+- **UI**: TextMeshPro 점수, 생명·붐 아이콘 알파, 라이프 0 이하 시 **게임 오버** UI 및 오브젝트 정리(`GameManager`). 현재 HUD/게임오버 UI는 `GameScene` 기준으로 구성되어 있습니다.
 
 ---
 
@@ -53,10 +53,9 @@ Assets/
 ├── Scenes/
 │   ├── GameScene.unity        # 최신 플레이 테스트용 씬 (붐 UI 연결)
 │   ├── SampleScene.unity      # 기본 샘플 씬
-│   └── (Test.unity 제거됨)
+│   └── (빌드 설정 활성 씬은 SampleScene)
 ├── Scripts/                   # 게임플레이 C# 스크립트
 ├── Prefabs/                   # 플레이어·적·탄·아이템·붐 등
-├── Test/                      # 실험용 별도 리소스(씬/스크립트/프리팹)
 ├── Animation/                 # 플레이어·아이템 애니메이션
 ├── Settings/                  # URP 등 렌더/씬 템플릿
 ├── TextMesh Pro/              # TMP 리소스·폰트
@@ -79,7 +78,9 @@ ProjectSettings/               # Unity 프로젝트 설정
 | `EnemyGenerator.cs` | 적 프리팹 스폰 타이밍·방향·리지드바디 설정 |
 | `Bullet.cs` / `BulletController.cs` | 플레이어·적 탄 이동·데미지·충돌 |
 | `Item.cs` | 코인/파워/붐 픽업 처리 |
+| `ItemManager.cs` | 아이템 드롭 확률·중복 제한·생성 관리 |
 | `Boom.cs` | 폭탄 존재 시간 후 파괴 |
+| `BackGround.cs` | 배경 자동 스크롤 및 타일 재배치 루프 |
 | `DrawArrow.cs` | 디버그용 화살표 표시 (스폰 방향 등) |
 
 **태그·레이어:** 스크립트에서 `Bullets`, `EnemyBullets`, `Enemy`, `Player`, `Boom` 등 태그를 전제로 하니, 프리팹·씬 설정이 맞는지 확인하세요.
@@ -104,8 +105,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 2. 이 저장소를 클론한 뒤 Hub에서 **Add**로 프로젝트 폴더를 엽니다.
 3. Unity가 **`Library` 폴더**를 자동 생성합니다. (저장소에는 **용량·GitHub 제한** 때문에 `Library/`가 포함되지 않습니다.)
 4. 플레이 테스트는 `Assets/Scenes/GameScene.unity`를 우선 권장합니다.
-5. 기능 실험용 씬은 현재 `Assets/Test/Scenes/Test.unity`에 분리되어 있습니다.
-6. 실제 빌드는 `ProjectSettings/EditorBuildSettings.asset`의 활성 씬 목록을 확인한 뒤 진행하세요. (현재 활성 목록에는 `SampleScene`만 등록)
+5. 실제 빌드는 `ProjectSettings/EditorBuildSettings.asset`의 활성 씬 목록을 확인한 뒤 진행하세요. (현재 활성 목록에는 `SampleScene`만 등록)
 
 ---
 
@@ -126,7 +126,7 @@ ProjectSettings/               # Unity 프로젝트 설정
 
 ## 알려진 이슈·메모
 
-- 씬별 설정 차이가 있습니다. `GameScene`은 `boomImages`가 연결되어 있고, `SampleScene`은 현재 `boomImages: []`입니다.
+- 씬 구성 차이가 있습니다. `GameScene`에는 `UIManager`와 `ItemManager`가 배치되어 있고, `SampleScene`은 기본 샘플 성격이라 동일 HUD/게임오버 흐름을 보장하지 않습니다.
 - `EnemyGenerator`는 변수명을 `Enemies`로 정리했으며, 기존 씬/프리팹 호환을 위해 `FormerlySerializedAs("Enemys")`를 사용합니다.
 - `UIManager`, `EnemyGenerator`, `BulletController` 등에 `Debug.Log`가 남아 있어 **콘솔 스팸**이 발생할 수 있습니다.
 - `BulletController`는 `enum Type`(`Player` / `Enemy`)을 사용하므로, 프리팹 인스펙터의 `type` 값이 정확해야 합니다.
