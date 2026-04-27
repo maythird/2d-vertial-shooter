@@ -46,14 +46,15 @@ public class ItemManager : MonoBehaviour
             itemType = Item.ItemType.Boom;
         }
 
+        // 같은 타입 아이템이 이미 화면에 있으면 스폰하지 않습니다
         foreach (var existing in FindObjectsByType<Item>(FindObjectsSortMode.None))
         {
             if (existing.itemType == itemType) return;
         }
 
-        var go = Instantiate(prefab, pos, Quaternion.identity);
-        var item = go.GetComponent<Item>();
-        item.itemType = itemType;
-        StartCoroutine(item.Move());
+        // Instantiate → PoolManager.Get 으로 교체
+        // Item.OnEnable()에서 Move 코루틴을 시작하므로 StartCoroutine 호출 불필요합니다
+        var go = PoolManager.Instance.Get(prefab, pos, Quaternion.identity);
+        go.GetComponent<Item>().itemType = itemType;
     }
 }

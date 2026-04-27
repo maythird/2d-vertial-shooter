@@ -30,15 +30,20 @@ public class EnemyGenerator : MonoBehaviour
     {
         int ranEnemy = Random.Range(0, Enemies.Length);
         int ranSpawnPoint = Random.Range(0, SpawnPoints.Length);
-        GameObject enemy = Instantiate(Enemies[ranEnemy], SpawnPoints[ranSpawnPoint].position,
-            SpawnPoints[ranSpawnPoint].rotation);
+
+        // Instantiate → PoolManager.Get 으로 교체
+        GameObject enemy = PoolManager.Instance.Get(
+            Enemies[ranEnemy],
+            SpawnPoints[ranSpawnPoint].position,
+            SpawnPoints[ranSpawnPoint].rotation
+        );
 
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();
         EnemyController enemyLogic = enemy.GetComponent<EnemyController>();
+
         if (ranSpawnPoint == 5 || ranSpawnPoint == 6)
         {
             int ranDestinationPoint = Random.Range(2, 4);
-            Debug.Log($"RD: {ranDestinationPoint}");
             Vector3 dir = DestinationPoints[ranDestinationPoint].position - SpawnPoints[ranSpawnPoint].position;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             enemy.transform.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
@@ -48,9 +53,7 @@ public class EnemyGenerator : MonoBehaviour
         else if (ranSpawnPoint == 7 || ranSpawnPoint == 8)
         {
             int ranDestinationPoint = Random.Range(0, 2);
-            Debug.Log($"RD: {ranDestinationPoint}");
             Vector3 dir = DestinationPoints[ranDestinationPoint].position - SpawnPoints[ranSpawnPoint].position;
-            transform.rotation = Quaternion.Euler(dir.normalized);
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             enemy.transform.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
             enemyLogic.dir = dir.normalized;
@@ -58,7 +61,8 @@ public class EnemyGenerator : MonoBehaviour
         }
         else
         {
-            rigid.linearVelocity = new Vector2(0, enemyLogic.speed * (-1));
+            enemyLogic.dir = Vector3.zero;
+            rigid.linearVelocity = new Vector2(0, enemyLogic.speed * -1);
         }
     }
 }

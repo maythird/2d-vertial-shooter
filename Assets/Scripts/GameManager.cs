@@ -48,12 +48,36 @@ public class GameManager : MonoBehaviour
     void ClearField()
     {
         foreach (var go in GameObject.FindGameObjectsWithTag("Bullets"))
-            Destroy(go);
+        {
+            if (PoolManager.Instance != null)
+                PoolManager.Instance.Release(go);
+            else
+                Destroy(go);
+        }
         foreach (var go in GameObject.FindGameObjectsWithTag("EnemyBullets"))
-            Destroy(go);
+        {
+            if (PoolManager.Instance != null)
+                PoolManager.Instance.Release(go);
+            else
+                Destroy(go);
+        }
+
+        // 풀링된 적은 Destroy 대신 Release로 반환합니다
         foreach (var go in GameObject.FindGameObjectsWithTag("Enemy"))
-            Destroy(go);
+        {
+            if (PoolManager.Instance != null)
+                PoolManager.Instance.Release(go);
+            else
+                Destroy(go);
+        }
+
+        // 풀링된 아이템은 Release로 반환합니다
         foreach (var item in FindObjectsByType<Item>(FindObjectsSortMode.None))
-            Destroy(item.gameObject);
+        {
+            if (PoolManager.Instance != null)
+                PoolManager.Instance.Release(item.gameObject);
+            else
+                Destroy(item.gameObject);
+        }
     }
 }

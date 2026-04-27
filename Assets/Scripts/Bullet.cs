@@ -4,34 +4,15 @@ public class Bullet : MonoBehaviour
 {
     public int damage;
 
-    public enum Type
-    {
-        None,
-        Player,
-        Enemy
-    }
+    public enum Type { None, Player, Enemy }
     public Type type;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (type == Type.Enemy)
+        if (type == Type.Enemy && other.gameObject.tag == "Player")
         {
-            if (other.gameObject.tag == "Player")
-            {
-                Player playerScript = other.GetComponent<Player>();
-                playerScript.TakeDamage(damage);
-                Destroy(gameObject);
-            }
+            other.GetComponent<Player>().TakeDamage(damage);
+            PoolManager.Instance.Release(gameObject);
         }
     }
 }

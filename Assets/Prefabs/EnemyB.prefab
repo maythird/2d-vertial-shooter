@@ -109,17 +109,13 @@ MonoBehaviour:
   sprites:
   - {fileID: -1147401495359466748, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   - {fileID: -7844560889915226194, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
-  health: 8
+  health: 5
   speed: 4
   name: B
   enemyScore: 500
-  player: {fileID: 0}
   dir: {x: 0, y: 0, z: 0}
   bulletObjA: {fileID: 0}
   bulletObj: {fileID: 0}
-  itemBoom: {fileID: 4021066064234024768, guid: 85259baaa68f2504f83fff4ce3a75f6a, type: 3}
-  itemPower: {fileID: 8821178788868565128, guid: 3e687c038bbcad04787febb667a305a2, type: 3}
-  itemCoin: {fileID: 2892721655406043384, guid: e5ed8ebed1320304c9991afb9465d7cd, type: 3}
 --- !u!60 &-8698988768733100909
 PolygonCollider2D:
   m_ObjectHideFlags: 0

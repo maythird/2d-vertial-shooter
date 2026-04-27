@@ -141,17 +141,13 @@ MonoBehaviour:
   sprites:
   - {fileID: -8421458170528590454, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   - {fileID: 3714015224569861163, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
-  health: 20
+  health: 10
   speed: 1.5
   name: C
   enemyScore: 1000
-  player: {fileID: 0}
   dir: {x: 0, y: 0, z: 0}
   bulletObjA: {fileID: 2483737413557090787, guid: 7026529ada7afe04b87d7a256b3c69f6, type: 3}
   bulletObj: {fileID: 5155845368650603656, guid: b2f048b2001e46747a53e6935db00c2d, type: 3}
-  itemBoom: {fileID: 4021066064234024768, guid: 85259baaa68f2504f83fff4ce3a75f6a, type: 3}
-  itemPower: {fileID: 8821178788868565128, guid: 3e687c038bbcad04787febb667a305a2, type: 3}
-  itemCoin: {fileID: 2892721655406043384, guid: e5ed8ebed1320304c9991afb9465d7cd, type: 3}
 --- !u!61 &-1585640331225376519
 BoxCollider2D:
   m_ObjectHideFlags: 0

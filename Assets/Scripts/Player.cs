@@ -6,7 +6,6 @@ public class Player : MonoBehaviour
     public static Player Instance { get; private set; }
 
     public Transform firePoint;
-    public GameObject BulletPrefab;
     public GameObject PlayerBulletPrefab;
     public GameObject BoomPrefab;
     private Collider2D col;
@@ -105,71 +104,22 @@ public class Player : MonoBehaviour
 
     void CreatePower1Bullet()
     {
-        //이동용 부모 오브젝트 생성
-        GameObject PlayerParentBulletGo = Instantiate(BulletPrefab);
-        PlayerParentBulletGo.transform.position = firePoint.position;
-        Debug.Log(firePoint.position);
-
-
-        //자식 총알 생성
-        GameObject playerBulletGo = Instantiate(PlayerSmallBulletPrefab);
-        playerBulletGo.transform.SetParent(PlayerParentBulletGo.transform);
-        playerBulletGo.transform.position = firePoint.position;
+        PoolManager.Instance.Get(PlayerSmallBulletPrefab, firePoint.position, Quaternion.identity);
     }
-
 
     void CreatePower2Bullet()
     {
-        //이동용 부모 오브젝트 생성
-        GameObject PlayerParentBulletGo = Instantiate(BulletPrefab);
-        PlayerParentBulletGo.transform.position = firePoint.position;
-        Debug.Log(firePoint.position);
-
-
-        //왼쪽 총알
-        GameObject playerBulletLeftGo = Instantiate(PlayerSmallBulletPrefab);
-        playerBulletLeftGo.transform.SetParent(PlayerParentBulletGo.transform);
-        Vector3 leftPos = firePoint.position;
-        leftPos.x -= 0.1f;
-        playerBulletLeftGo.transform.position = leftPos;
-
-
-        //오른쪽 총알
-        GameObject playerBulletRightGo = Instantiate(PlayerSmallBulletPrefab);
-        playerBulletRightGo.transform.SetParent(PlayerParentBulletGo.transform);
-        Vector3 rightPos = firePoint.position;
-        rightPos.x += 0.1f;
-        playerBulletRightGo.transform.position = rightPos;
+        Vector3 leftPos  = firePoint.position + Vector3.left  * 0.1f;
+        Vector3 rightPos = firePoint.position + Vector3.right * 0.1f;
+        PoolManager.Instance.Get(PlayerSmallBulletPrefab, leftPos,  Quaternion.identity);
+        PoolManager.Instance.Get(PlayerSmallBulletPrefab, rightPos, Quaternion.identity);
     }
 
     void CreatePower3Bullet()
     {
-        //이동용 부모 오브젝트 생성
-        GameObject PlayerParentBulletGo = Instantiate(BulletPrefab);
-        PlayerParentBulletGo.transform.position = firePoint.position;
-        Debug.Log(firePoint.position);
-
-        //가운데 총알
-        GameObject playerBulletGo = Instantiate(PlayerBulletPrefab);
-        playerBulletGo.transform.SetParent(PlayerParentBulletGo.transform);
-        Debug.Log(playerBulletGo.transform.position);
-        playerBulletGo.transform.position = firePoint.position;
-        Debug.Log(playerBulletGo.transform.position);
-
-        //왼쪽 총알
-        GameObject playerBulletLeftGo = Instantiate(PlayerSmallBulletPrefab);
-        playerBulletLeftGo.transform.SetParent(PlayerParentBulletGo.transform);
-        Vector3 leftPos = firePoint.position;
-        leftPos.x -= 0.25f;
-        playerBulletLeftGo.transform.position = leftPos;
-
-
-        //오른쪽 총알
-        GameObject playerBulletRightGo = Instantiate(PlayerSmallBulletPrefab);
-        playerBulletRightGo.transform.SetParent(PlayerParentBulletGo.transform);
-        Vector3 rightPos = firePoint.position;
-        rightPos.x += 0.25f;
-        playerBulletRightGo.transform.position = rightPos;
+        PoolManager.Instance.Get(PlayerBulletPrefab,      firePoint.position,                    Quaternion.identity);
+        PoolManager.Instance.Get(PlayerSmallBulletPrefab, firePoint.position + Vector3.left  * 0.25f, Quaternion.identity);
+        PoolManager.Instance.Get(PlayerSmallBulletPrefab, firePoint.position + Vector3.right * 0.25f, Quaternion.identity);
     }
 
     void CreateBoom()

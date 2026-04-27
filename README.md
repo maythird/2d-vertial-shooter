@@ -1,4 +1,4 @@
-# 2D Vertical Shooter Study (Unity 6 URP)
+# SpaceShooter (Unity 6 URP)
 
 **문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-27
 

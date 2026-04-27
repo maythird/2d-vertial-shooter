@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1418183070730856493}
   - component: {fileID: -2912219539411326330}
   - component: {fileID: 3934021023083331603}
+  - component: {fileID: 1012366166726317751}
   m_Layer: 0
   m_Name: PlayerSmallBulletPrefab
   m_TagString: Bullets
@@ -143,4 +144,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
   damage: 1
+  type: 1
+--- !u!114 &1012366166726317751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353365628619779336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca357d7736c6884c952c898811d9ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BulletController
   type: 1
