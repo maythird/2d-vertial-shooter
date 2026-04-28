@@ -16,19 +16,6 @@ public class EnemyGenerator : MonoBehaviour
     public int CurrentWave { get; private set; } = 0;
     public int TotalWaves  { get; private set; } = 0;
 
-    void Awake()
-    {
-        TextAsset json = Resources.Load<TextAsset>("stage_data");
-        if (json == null)
-        {
-            Debug.LogError("stage_data.json을 Resources 폴더에서 찾을 수 없습니다.");
-            return;
-        }
-
-        stageData  = JsonUtility.FromJson<StageData>(json.text);
-        TotalWaves = stageData.waves.Length;
-    }
-
     void OnEnable()
     {
         GameManager.OnRestart += ResetStage;
@@ -39,8 +26,18 @@ public class EnemyGenerator : MonoBehaviour
         GameManager.OnRestart -= ResetStage;
     }
 
+    // DataManager.Awake()는 모든 Start() 이전에 실행되므로 여기서 안전하게 참조
     void Start()
     {
+        stageData = DataManager.Instance.StageData;
+
+        if (stageData == null)
+        {
+            Debug.LogError("[EnemyGenerator] DataManager에서 StageData를 받지 못했습니다.");
+            return;
+        }
+
+        TotalWaves = stageData.waves.Length;
         StartCoroutine(StageRoutine());
     }
 
