@@ -1,6 +1,6 @@
 # SpaceShooter (Unity 6 URP)
 
-**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-28 · 웨이브 기반 적 스폰 시스템 추가
+**문서:** `main` 브랜치 기준 · 마지막 갱신 2026-04-28 · DataManager 싱글톤 추가
 
 골드메탈님의 **2D 종스크롤 슈팅** 튜토리얼을 따라 만든 Unity 학습용 프로젝트입니다.  
 에셋 팩 **Vertical 2D Shooting BE4**의 스프라이트·데모 리소스를 활용하고, 플레이어·적·탄·아이템·UI 로직은 `Assets/Scripts`에 구현되어 있습니다.
@@ -28,7 +28,7 @@
 - **파워 단계 (1~3)**: 기본값은 1이며, **파워 아이템** 픽업으로만 단계가 올라갑니다(최대 3). 단계에 따라 탄 개수·배치가 달라짐. 파워 최대 시 파워 아이템 드롭 안 함.
 - **폭탄(Boom)**: `B` 키 사용. 화면의 **모든 적과 적 탄환을 즉시 제거**하고 애니메이션 재생 후 소멸.
 - **무적·리스폰**: 피격 시 짧은 **무적 시간** 동안 입력 무시·콜라이더 비활성·투명 처리 후 시작 위치로 복귀.
-- **웨이브 기반 적 스폰**: `EnemyGenerator`가 `Resources/stage_data.json`을 읽어 **10웨이브** 순서대로 적을 생성. 각 항목의 `delay`(초)·`enemyType`(A/B/C)·`point`(스폰 포인트 인덱스)로 타이밍과 위치를 제어. 웨이브 사이 쿨다운(기본 3 초) 후 다음 웨이브 진행. **게임오버·일시정지 중에는 타이머 정지, 리트라이 시 1웨이브부터 리셋.**
+- **웨이브 기반 적 스폰**: `DataManager`가 `Resources/stage_data.json`을 로드·파싱해 `StageData`를 보관하고, `EnemyGenerator`가 이를 참조해 **10웨이브** 순서대로 적을 생성. 각 항목의 `delay`(초)·`enemyType`(A/B/C)·`point`(스폰 포인트 인덱스)로 타이밍과 위치를 제어. 웨이브 사이 쿨다운(기본 3초) 후 다음 웨이브 진행. **게임오버·일시정지 중에는 타이머 정지, 리트라이 시 1웨이브부터 리셋.**
 - **아이템 드롭**: `ItemManager`가 확률·중복·파워 상한 조건을 관리. 종류별(코인·파워·붐) 최대 1개씩만 화면에 존재.
 - **게임 오버**: 생명 0 → `GameManager`가 상태 전환·필드 정리·이벤트 발행 → `UIManager`가 HUD 숨김 및 게임오버 화면 표시. 재시작 버튼으로 복구.
 - **오브젝트 풀링**: `PoolManager` 싱글톤이 적·탄·아이템 풀을 중앙 관리. `Instantiate`/`Destroy` 대신 `Get`/`Release`로 GC 부하 최소화.
@@ -75,11 +75,12 @@ ProjectSettings/               # Unity 프로젝트 설정
 | `Player.cs` | 이동·발사·파워·폭탄·무적·생명·점수. **싱글톤** (`Player.Instance`) |
 | `UIManager.cs` | 점수 TMP·라이프/붐 HUD. `GameManager` 이벤트 구독으로 게임오버·재시작 UI 처리. **싱글톤** |
 | `GameManager.cs` | `GameState` 관리(`Playing`/`GameOver`). `OnGameOver`·`OnRestart` 이벤트 발행. 필드 정리. **싱글톤** (`DontDestroyOnLoad`) |
+| `DataManager.cs` | `stage_data.json`을 `Awake()`에서 로드·파싱해 `StageData`를 보관. 데이터 접근의 단일 진입점. **싱글톤** |
 | `ItemManager.cs` | 아이템 드롭 확률·중복 제한·파워 상한 체크·생성 관리. **싱글톤** |
 | `PoolManager.cs` | 적·탄·아이템 오브젝트 풀 중앙 관리. Inspector에서 프리팹·예열 수 등록. **싱글톤** |
 | `ObjectPool.cs` | 단일 프리팹용 풀 구현. `Get`(꺼내기)·`Release`(반환) API 제공 |
 | `EnemyController.cs` | 적 이동·체력·피격·사망 시 아이템 드롭. `isDead` 플래그로 중복 드롭 방지. `OnEnable`에서 체력 초기화 |
-| `EnemyGenerator.cs` | `stage_data.json`을 파싱해 웨이브 단위로 적 스폰. 코루틴(`StageRoutine` → `WaveRoutine`)으로 `delay` 대기 후 순차 생성. `GameManager.OnRestart` 구독으로 리트라이 시 1웨이브 리셋 |
+| `EnemyGenerator.cs` | `DataManager.Instance.StageData`를 참조해 웨이브 단위로 적 스폰. 코루틴(`StageRoutine` → `WaveRoutine`)으로 `delay` 대기 후 순차 생성. `GameManager.OnRestart` 구독으로 리트라이 시 1웨이브 리셋 |
 | `SpwanData.cs` | `SpawnData`(적 1기 스폰 정보)·`WaveData`(웨이브)·`StageData`(전체 스테이지) 직렬화 클래스 |
 | `Bullet.cs` / `BulletController.cs` | 플레이어·적 탄 이동·데미지·충돌. 풀 반환 처리 포함 |
 | `Item.cs` | `ItemType` enum(Coin·Power·Boom) 기반 픽업 처리. `OnEnable`에서 이동 코루틴 시작 |
@@ -96,16 +97,19 @@ ProjectSettings/               # Unity 프로젝트 설정
 `GameObject.Find` 없이 매니저에 접근합니다.
 
 ```
-Player.Instance
+DataManager.Instance   ──→ StageData (stage_data.json 파싱 결과)
+                                │
+Player.Instance                 ↓
 GameManager.Instance   ──→ OnGameOver / OnRestart (event)
 ItemManager.Instance                                  │
 UIManager.Instance     ←───────────────────────────── ┤
 EnemyGenerator         ←───────────────────────────── ┘ (OnRestart 구독 → 웨이브 리셋)
+      └──→ DataManager.StageData (Start에서 참조)
 PoolManager.Instance   ←── EnemyController / BulletController / Item / ItemManager / EnemyGenerator
 ```
 
 - `GameManager`: `DontDestroyOnLoad` 적용 (씬 전환 유지)
-- `ItemManager` / `UIManager` / `Player` / `PoolManager`: 씬 종속, 중복 시 자동 제거
+- `DataManager` / `ItemManager` / `UIManager` / `Player` / `PoolManager`: 씬 종속, 중복 시 자동 제거
 
 ---
 
@@ -127,7 +131,7 @@ PoolManager.Instance   ←── EnemyController / BulletController / Item / Ite
 2. 이 저장소를 클론한 뒤 Hub에서 **Add**로 프로젝트 폴더를 엽니다.
 3. Unity가 **`Library` 폴더**를 자동 생성합니다. (저장소에는 포함되지 않습니다.)
 4. 플레이 테스트는 `Assets/Scenes/GameScene.unity`를 우선 권장합니다.
-5. `GameManager`, `ItemManager`, **`PoolManager`** 오브젝트가 씬에 배치되어 있어야 정상 동작합니다.
+5. `GameManager`, **`DataManager`**, `ItemManager`, **`PoolManager`** 오브젝트가 씬에 배치되어 있어야 정상 동작합니다.
 6. `PoolManager` Inspector의 **Entries**에 적·탄·아이템 프리팹을 등록하고 Warm Up 수를 설정하세요.
 7. `EnemyGenerator` Inspector의 **Enemies** 배열에 EnemyA(index 0)·EnemyB(index 1)·EnemyC(index 2) 프리팹을 순서대로 등록하세요. `stage_data.json`의 `enemyType` 값과 인덱스가 일치해야 합니다.
 8. 웨이브 사이 대기 시간은 `EnemyGenerator`의 **Wave Cooldown** 필드(초)에서 조정할 수 있습니다.
@@ -151,7 +155,8 @@ PoolManager.Instance   ←── EnemyController / BulletController / Item / Ite
 
 ## 웨이브 데이터 구조 (`stage_data.json`)
 
-`Assets/Resources/stage_data.json`을 수정해 스테이지 구성을 코드 없이 조정할 수 있습니다.
+`Assets/Resources/stage_data.json`을 수정해 스테이지 구성을 코드 없이 조정할 수 있습니다.  
+로드·파싱은 **`DataManager`** 가 전담하며, `EnemyGenerator`는 `DataManager.Instance.StageData`를 참조해 스폰합니다.
 
 ```json
 {
