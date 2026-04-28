@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,61 +9,148 @@ public class EnemyGenerator : MonoBehaviour
     public Transform[] SpawnPoints;
     public Transform[] DestinationPoints;
 
-    private float delay;
-    private float waitTime;
+    [SerializeField] private float waveCooldown = 3f;
 
-    void Update()
+    private StageData stageData;
+
+    public int CurrentWave { get; private set; } = 0;
+    public int TotalWaves  { get; private set; } = 0;
+
+    void Awake()
     {
-        if (GameManager.Instance.State != GameState.Playing) return;
-
-        waitTime += Time.deltaTime;
-        if (waitTime >= delay)
+        TextAsset json = Resources.Load<TextAsset>("stage_data");
+        if (json == null)
         {
-            if (Player.Instance != null)
-                SpawnEnemy();
+            Debug.LogError("stage_data.json을 Resources 폴더에서 찾을 수 없습니다.");
+            return;
+        }
 
-            delay = Random.Range(0.5f, 3f);
-            waitTime = 0;
+        stageData  = JsonUtility.FromJson<StageData>(json.text);
+        TotalWaves = stageData.waves.Length;
+    }
+
+    void OnEnable()
+    {
+        GameManager.OnRestart += ResetStage;
+    }
+
+    void OnDisable()
+    {
+        GameManager.OnRestart -= ResetStage;
+    }
+
+    void Start()
+    {
+        StartCoroutine(StageRoutine());
+    }
+
+    void ResetStage()
+    {
+        StopAllCoroutines();
+        CurrentWave = 0;
+        StartCoroutine(StageRoutine());
+    }
+
+    // ──────────────────────────────────────────────
+    //  스테이지 전체 흐름
+    // ──────────────────────────────────────────────
+    IEnumerator StageRoutine()
+    {
+        for (int i = 0; i < stageData.waves.Length; i++)
+        {
+            CurrentWave = i + 1;
+            Debug.Log($"[Wave {CurrentWave}/{TotalWaves}] 시작");
+
+            yield return StartCoroutine(WaveRoutine(stageData.waves[i]));
+
+            if (i < stageData.waves.Length - 1)
+            {
+                Debug.Log($"[Wave {CurrentWave}/{TotalWaves}] 클리어 — {waveCooldown}초 후 다음 웨이브");
+                yield return WaitWhilePaused(waveCooldown);
+            }
+        }
+
+        Debug.Log("모든 웨이브 클리어!");
+    }
+
+    // ──────────────────────────────────────────────
+    //  한 웨이브 내 순차 스폰
+    // ──────────────────────────────────────────────
+    IEnumerator WaveRoutine(WaveData wave)
+    {
+        foreach (SpawnData data in wave.enemies)
+        {
+            yield return WaitWhilePaused(data.delay);
+
+            if (Player.Instance != null)
+                SpawnEnemy(data);
         }
     }
 
-    void SpawnEnemy()
+    // Playing 상태가 아니면 멈추고, 재개되면 남은 시간만큼 더 기다리는 헬퍼
+    IEnumerator WaitWhilePaused(float seconds)
     {
-        int ranEnemy = Random.Range(0, Enemies.Length);
-        int ranSpawnPoint = Random.Range(0, SpawnPoints.Length);
+        float remaining = seconds;
+        while (remaining > 0f)
+        {
+            if (GameManager.Instance.State == GameState.Playing)
+                remaining -= Time.deltaTime;
 
-        // Instantiate → PoolManager.Get 으로 교체
+            yield return null;
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  개별 적기 스폰
+    // ──────────────────────────────────────────────
+    void SpawnEnemy(SpawnData data)
+    {
+        int enemyIndex = (int)data.enemyType;
+        if (enemyIndex < 0 || enemyIndex >= Enemies.Length)
+        {
+            Debug.LogWarning($"enemyType {data.enemyType} 에 해당하는 프리팹이 없습니다.");
+            return;
+        }
+
+        int spawnPointIndex = data.point;
+        if (spawnPointIndex < 0 || spawnPointIndex >= SpawnPoints.Length)
+        {
+            Debug.LogWarning($"SpawnPoint 인덱스 {spawnPointIndex} 가 범위를 벗어났습니다.");
+            return;
+        }
+
         GameObject enemy = PoolManager.Instance.Get(
-            Enemies[ranEnemy],
-            SpawnPoints[ranSpawnPoint].position,
-            SpawnPoints[ranSpawnPoint].rotation
+            Enemies[enemyIndex],
+            SpawnPoints[spawnPointIndex].position,
+            SpawnPoints[spawnPointIndex].rotation
         );
 
-        Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();
-        EnemyController enemyLogic = enemy.GetComponent<EnemyController>();
+        Rigidbody2D rigid       = enemy.GetComponent<Rigidbody2D>();
+        EnemyController logic   = enemy.GetComponent<EnemyController>();
 
-        if (ranSpawnPoint == 5 || ranSpawnPoint == 6)
+        if (spawnPointIndex == 5 || spawnPointIndex == 6)
         {
-            int ranDestinationPoint = Random.Range(2, 4);
-            Vector3 dir = DestinationPoints[ranDestinationPoint].position - SpawnPoints[ranSpawnPoint].position;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            enemy.transform.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
-            enemyLogic.dir = dir.normalized;
-            DrawArrow.ForDebug2D(enemy.transform.position, dir, 2f);
+            int dest = Random.Range(2, 4);
+            ApplyDiagonalMovement(enemy, logic, spawnPointIndex, dest);
         }
-        else if (ranSpawnPoint == 7 || ranSpawnPoint == 8)
+        else if (spawnPointIndex == 7 || spawnPointIndex == 8)
         {
-            int ranDestinationPoint = Random.Range(0, 2);
-            Vector3 dir = DestinationPoints[ranDestinationPoint].position - SpawnPoints[ranSpawnPoint].position;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            enemy.transform.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
-            enemyLogic.dir = dir.normalized;
-            DrawArrow.ForDebug2D(enemy.transform.position, dir, 2f);
+            int dest = Random.Range(0, 2);
+            ApplyDiagonalMovement(enemy, logic, spawnPointIndex, dest);
         }
         else
         {
-            enemyLogic.dir = Vector3.zero;
-            rigid.linearVelocity = new Vector2(0, enemyLogic.speed * -1);
+            logic.dir = Vector3.zero;
+            rigid.linearVelocity = new Vector2(0, logic.speed * -1);
         }
+    }
+
+    void ApplyDiagonalMovement(GameObject enemy, EnemyController logic, int spawnIdx, int destIdx)
+    {
+        Vector3 dir = DestinationPoints[destIdx].position - SpawnPoints[spawnIdx].position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        enemy.transform.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
+        logic.dir = dir.normalized;
+        DrawArrow.ForDebug2D(enemy.transform.position, dir, 2f);
     }
 }
